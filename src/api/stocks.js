@@ -1,24 +1,53 @@
 const axios = require("axios");
 
 const BASE_URL = "https://api.iextrading.com/1.0";
-const GET_COMPANY_URL = BASE_URL + "/stock/aapl/company";
+const BASE_STOCK_URL = BASE_URL + "/stock";
 
 
 
-export default function getCompanyInfo(companyName, successHandlerFunc, failHandlerFunc, alwaysHandlerFunc) {
-    axios.get(GET_COMPANY_URL)
+export function getCompanyInfo(symbol, successHandlerFunc, failHandlerFunc, alwaysHandlerFunc) {
+    axios.get(BASE_STOCK_URL + "/" + symbol + "/company")
         .then(function (response) {
             // handle success
-            console.log(response);
             if(successHandlerFunc) {
-                successHandlerFunc();
+                //Convert to our own data structure to keep iextrading data separated from ours
+                let data = {
+                    name: response.data.companyName,
+                    description: response.data.description
+                };
+                successHandlerFunc(data);
             }
         })
         .catch(function (error) {
-            // handle error
             console.log(error);
             if(failHandlerFunc) {
-                failHandlerFunc();
+                failHandlerFunc(error);
+            }
+        })
+        .then(function () {
+            // always executed
+            if(alwaysHandlerFunc) {
+                alwaysHandlerFunc();
+            }
+        });
+}
+
+export function getStockPrice(symbol, successHandlerFunc, failHandlerFunc, alwaysHandlerFunc) {
+    axios.get(BASE_STOCK_URL + "/" + symbol + "/price")
+        .then(function (response) {
+            // handle success
+            if(successHandlerFunc) {
+                //Convert to our own data structure to keep iextrading data separated from ours
+                let data = {
+                    price: response.data
+                };
+                successHandlerFunc(data);
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+            if(failHandlerFunc) {
+                failHandlerFunc(error);
             }
         })
         .then(function () {

@@ -1,46 +1,76 @@
-import React  from 'react';
-import {Statistic, Skeleton} from "antd"
+import React, { Component }   from 'react';
+import {Statistic, Skeleton, Row, Col} from "antd"
+import {getCompanyInfo} from "../api/stocks";
 
-export default function StockPrice() {
-    // Declare a new state variable, which we'll call "count"
-    const {price, isLoading, currency} = props;
+export default class StockDetails extends Component {
+    state = {
+        isLoading: false,
+        companyName: " - ",
+        description: " - ",
+        errorMessage: ""
+    };
 
-    let stockPrice = <Statistic title="Current Stock Price" value={price} suffix={currency} />;
-    if(isLoading) {
-        stockPrice =
-            <div>
-                <Statistic title="Current Stock Price" value={" "}/>
-                <Skeleton title={false} active paragraph={{rows:1}}/>
-            </div>;
+    componentDidUpdate(prevProps) {
+        if (this.props.symbol !== prevProps.symbol) {
+            this.setState({
+                isLoading: true
+            }, () => {
+                getCompanyInfo(this.props.symbol,this.submitSuccessFunc,this.submitFailureFunc,this.submitAlwaysFunc);
+            })
+
+        }
     }
 
-    return (
-        <Row className="panelRow">
-            <Col span={24}>
-                {stockPrice}
-            </Col>
-        </Row>
-    );
-}
+    submitSuccessFunc = (data) => {
+        this.setState({
+            companyName: data.name,
+            description: data.description
 
-export default function StockDescription() {
-    // Declare a new state variable, which we'll call "count"
-    const {description, isLoading} = props;
+        })
+    };
 
-    let stockDescription = <Statistic title="Description" value={description} />;
-    if(isLoading) {
-        stockDescription =
+    submitFailureFunc = (data) => {
+        this.setState({
+            errorMessage: data.errorMessage
+        })
+    };
+
+    submitAlwaysFunc = () => {
+        this.setState({
+            isLoading: false
+        })
+    };
+
+    render() {
+        let stockCompanyName = <Statistic title="Company Name" value={this.state.companyName} />;
+        let stockDescription = <Statistic title="Description" value={this.state.description} />;
+        if(this.state.isLoading) {
+            stockCompanyName =
+                <div>
+                    <Statistic title="Company Name" value={" "}/>
+                    <Skeleton title={false} active paragraph={{rows:1}}/>
+                </div>;
+            stockDescription =
+                <div>
+                    <Statistic title="Description" value={" "}/>
+                    <Skeleton title={false} active paragraph={{rows:3}}/>
+                </div>
+        }
+
+        return (
             <div>
-                <Statistic title="Description" value={" "}/>
-                <Skeleton title={false} active paragraph={{rows:1}}/>
-            </div>;
+                <Row className="panelRow">
+                    <Col span={24}>
+                        {stockCompanyName}
+                    </Col>
+                </Row>
+                <Row className="panelRow">
+                    <Col span={24}>
+                        {stockDescription}
+                    </Col>
+                </Row>
+            </div>
+        );
     }
 
-    return (
-        <Row className="panelRow">
-            <Col span={24}>
-                {stockDescription}
-            </Col>
-        </Row>
-    );
 }

@@ -11,8 +11,8 @@ class App extends Component {
         return (
             <div className="App">
                 <Row>
-                    <Col span={16} offset={4}>
-                        <Title>Stock Ticker Viewer</Title>
+                    <Col span={14} offset={5}>
+                        <Title>Stock Viewer</Title>
                         <Card>
                             <TickerPanel/>
                         </Card>
