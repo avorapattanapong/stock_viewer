@@ -19,7 +19,6 @@ export function getCompanyInfo(symbol, successHandlerFunc, failHandlerFunc, alwa
             }
         })
         .catch(function (error) {
-            console.log(error);
             if(failHandlerFunc) {
                 failHandlerFunc(error);
             }
