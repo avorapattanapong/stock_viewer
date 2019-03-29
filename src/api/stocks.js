@@ -45,7 +45,6 @@ export function getStockPrice(symbol, successHandlerFunc, failHandlerFunc, alway
             }
         })
         .catch(function (error) {
-            console.log(error);
             if(failHandlerFunc) {
                 failHandlerFunc(error);
             }
